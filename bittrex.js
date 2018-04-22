@@ -1,7 +1,9 @@
 var bittrex = require('node-bittrex-api');
+const config = require('./config');
+
 bittrex.options({
-  'apikey': '',
-  'apisecret': '',
+  'apikey': config.bittrex_api.APIKEY,
+  'apisecret': config.bittrex_api.APISECRET
 });
 var markets = {}
 var MarketName

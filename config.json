@@ -1,0 +1,10 @@
+{
+    "bittrex_api": {
+	"APIKEY":"your_bittrex_key",
+	"APISECRET":"your_bittrex_secret"
+    },
+    "binance_api": {
+	"APIKEY":"your_binance_key",
+	"APISECRET":"your_binance_secret"
+    }
+}

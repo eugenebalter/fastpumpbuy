@@ -1,7 +1,9 @@
 const binancebot = require('node-binance-api');
+const config = require('./config');
+
 binancebot.options({
-  APIKEY: '',
-  APISECRET: '',
+  APIKEY: config.binance_api.APIKEY,
+  APISECRET: config.binance_api.APISECRET,
   useServerTime: true, // If you get timestamp errors, synchronize to server time at startup
   test: false // If you want to use sandbox mode where orders are simulated
 });

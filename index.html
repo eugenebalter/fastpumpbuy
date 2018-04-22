@@ -1,48 +1,90 @@
-<script type="text/javascript">
-  function buy(isTest) {
-    var xhr = new XMLHttpRequest();
+<html lang="en">
 
-    xhr.onreadystatechange = function() {
-      if (xhr.readyState == XMLHttpRequest.DONE) {
-        //            alert(xhr.responseText);
-        var div = document.getElementById('coin_buy_info');
-        var obj = JSON.parse(xhr.responseText)
-        div.innerHTML += 'Buy price:'+obj.price+" qty:"+obj.qty;
+<head>
+  <title>Fast buy</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
+  <script type="text/javascript">
+    function buy(isTest) {
+      var xhr = new XMLHttpRequest();
+
+      xhr.onreadystatechange = function() {
+        if (xhr.readyState == XMLHttpRequest.DONE) {
+          //            alert(xhr.responseText);
+          var div = document.getElementById('coin_buy_info');
+          var obj = JSON.parse(xhr.responseText)
+          div.innerHTML += 'Buy price:' + obj.price + " qty:" + obj.qty;
+          subscribeOnCoinInfo()
+        }
+      }
+      xhr.open("POST", "buy", true)
+
+      xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded')
+
+      xhr.send("test=" + isTest + "&coin=" + document.getElementsByName("coin")[0].value + "&btc_amount=" + document.getElementsByName("btc_amount")[0].value);
+    }
+
+    function subscribeOnCoinInfo() {
+      var div_coin_price_update = document.getElementById('coin_price_update');
+      var xhr_chat = new XMLHttpRequest();
+      xhr_chat.open("GET", "/subscribe", true)
+      xhr_chat.onload = function() {
+        var obj = JSON.parse(xhr_chat.responseText)
+        div_coin_price_update.innerHTML = "Current price: " + obj.price + "  Change %:" + obj.dev
         subscribeOnCoinInfo()
       }
+      xhr_chat.onerror = function() {
+        console.log("Error")
+        div_coin_price_update.innerHTML = "Server response error"
+      }
+      xhr_chat.onabort = function() {
+        setTimeout(subscribeOnCoinInfo, 500)
+      }
+      xhr_chat.send('')
     }
-    xhr.open("POST", "buy", true)
+  </script>
 
-    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded')
+</head>
 
-    xhr.send("test=" + isTest + "&coin=" + document.getElementsByName("coin")[0].value + "&btc_amount=" + document.getElementsByName("btc_amount")[0].value);
-  }
-  function subscribeOnCoinInfo() {
-    var div_coin_price_update = document.getElementById('coin_price_update');
-    var xhr_chat = new XMLHttpRequest();
-    xhr_chat.open("GET","/subscribe",true)
-    xhr_chat.onload= function(){
-      var obj = JSON.parse(xhr_chat.responseText)
-      div_coin_price_update.innerHTML = "Current price: "+obj.price+"  Change %:"+obj.dev
-      subscribeOnCoinInfo()
-    }
-    xhr_chat.onerror= function(){
-      console.log("Error")
-      div_coin_price_update.innerHTML = "Server response error"
-    }
-    xhr_chat.onabort= function(){
-      setTimeout(subscribeOnCoinInfo,500)
-    }
-    xhr_chat.send('')
-  }
-</script>
+<body>
+  <div class="container">
+    <H2>Be first on pump</H2>
+    <div class="form-check">
+      <input class="form-check-input" type="radio" name="exchange_name" id="exampleRadios1" value="1" checked>
+      <label class="form-check-label" for="exampleRadios1">
+        Bittrex exchange
+      </label>
+    </div>
+    <div class="form-check">
+      <input class="form-check-input" type="radio" name="exchange_name" id="exampleRadios2" value="1">
+      <label class="form-check-label" for="exampleRadios2">
+        Binance exchange
+      </label>
+    </div>
+    COIN to buy:<br>
+    <input type="text" name="coin" value="" id="coin"><br> btc amount:<br>
+    <input type="text" name="btc_amount" value=""><br><br>
+    <button id="buy_btn" type="button" class="btn btn-success" onclick="buy()">Buy</button>
+    <button id="test_buy_btn" type="button" class="btn btn-secondary" onclick="buy(1)">Test Buy</button>
+    <button id="sell_btn" type="button" class="btn btn-danger" onclick="Sell()">Sell</button>
+    <br><br>
+    <div id="coin_buy_info"> </div>
+    <br>
+    <div id="coin_price_update"> </div>
+  </div>
 
-COIN:<br>
-<input type="text" name="coin" value=""><br> btc amount:<br>
-<input type="text" name="btc_amount" value=""><br><br>
-<input type="submit" value="Buy" onclick="buy()">
-<input type="submit" value="Test buy" onclick="buy(1)">
-<br><br>
-<div id="coin_buy_info"> </div>
-<br>
-<div id="coin_price_update"> </div>
+  <script type="text/javascript">
+    var input = document.getElementById("coin");
+
+    // Execute a function when the user releases a key on the keyboard
+    input.addEventListener("keyup", function(event) {
+      // Cancel the default action, if needed
+      event.preventDefault();
+      // Number 13 is the "Enter" key on the keyboard
+      if (event.keyCode === 13) {
+        // Trigger the button element with a click
+        document.getElementById("test_buy_btn").click();
+      }
+    });
+  </script>
+
+</body>
