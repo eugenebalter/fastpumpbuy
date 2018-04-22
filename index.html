@@ -1,0 +1,48 @@
+<script type="text/javascript">
+  function buy(isTest) {
+    var xhr = new XMLHttpRequest();
+
+    xhr.onreadystatechange = function() {
+      if (xhr.readyState == XMLHttpRequest.DONE) {
+        //            alert(xhr.responseText);
+        var div = document.getElementById('coin_buy_info');
+        var obj = JSON.parse(xhr.responseText)
+        div.innerHTML += 'Buy price:'+obj.price+" qty:"+obj.qty;
+        subscribeOnCoinInfo()
+      }
+    }
+    xhr.open("POST", "buy", true)
+
+    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded')
+
+    xhr.send("test=" + isTest + "&coin=" + document.getElementsByName("coin")[0].value + "&btc_amount=" + document.getElementsByName("btc_amount")[0].value);
+  }
+  function subscribeOnCoinInfo() {
+    var div_coin_price_update = document.getElementById('coin_price_update');
+    var xhr_chat = new XMLHttpRequest();
+    xhr_chat.open("GET","/subscribe",true)
+    xhr_chat.onload= function(){
+      var obj = JSON.parse(xhr_chat.responseText)
+      div_coin_price_update.innerHTML = "Current price: "+obj.price+"  Change %:"+obj.dev
+      subscribeOnCoinInfo()
+    }
+    xhr_chat.onerror= function(){
+      console.log("Error")
+      div_coin_price_update.innerHTML = "Server response error"
+    }
+    xhr_chat.onabort= function(){
+      setTimeout(subscribeOnCoinInfo,500)
+    }
+    xhr_chat.send('')
+  }
+</script>
+
+COIN:<br>
+<input type="text" name="coin" value=""><br> btc amount:<br>
+<input type="text" name="btc_amount" value=""><br><br>
+<input type="submit" value="Buy" onclick="buy()">
+<input type="submit" value="Test buy" onclick="buy(1)">
+<br><br>
+<div id="coin_buy_info"> </div>
+<br>
+<div id="coin_price_update"> </div>
