@@ -1,10 +1,10 @@
 {
     "bittrex_api": {
-	"APIKEY":"23226cc72b2542e287808fb561d2e579",
-	"APISECRET":"655c3cd2ca5248a7800ba1f66610539e"
+	"APIKEY":"",
+	"APISECRET":""
     },
     "binance_api": {
-	"APIKEY":"BtjqW1NvWoSLkmqng54D7lAgD21bopcpFXP1e13qUtQQLC4B6TY0x7mYTg8x0goY",
-	"APISECRET":"VnU15fHvwiL102aVSGInh6R9naFzqr3wjuGy6LmGQGeHW6JWMLjXWVaxFj8rWfaF"
+	"APIKEY":"",
+	"APISECRET":""
     }
 }
