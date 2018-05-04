@@ -1,40 +1,64 @@
-const http = require("http")
-const fs = require("fs")
-const url = require('url')
-const qs = require('querystring');
-const bittrex = require('./bittrex')
+var createError = require('http-errors');
+var express = require('express');
+var path = require('path');
+var cookieParser = require('cookie-parser');
+var logger = require('morgan');
+var bodyParser = require('body-parser');
+var hbs = require('hbs');
 
-var server = http.createServer(function(req, res) {
-  var q = url.parse(req.url, true).query;
-  if (req.method == "POST") {
+var indexRouter = require('./routes/index');
 
-    var jsonString = '';
+var app = express();
 
-    req.on('data', function(data) {
-      jsonString += data;
-    });
+// view engine setup
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'hbs');
 
-    req.on('end', function() {
-      var r = qs.parse(jsonString)
-      bittrex.buy(r, res)
-    });
+app.use(logger('dev'));
+app.use(express.json());
+app.use(express.urlencoded({
+  extended: false
+}));
+app.use(cookieParser());
+app.use(express.static(path.join(__dirname, 'public')));
+app.use(bodyParser.json()); // to support JSON-encoded bodies
+app.use(bodyParser.urlencoded({ // to support URL-encoded bodies
+  extended: true
+}));
+app.use('/', indexRouter);
 
-  } else if (req.method == "GET") {
-    if (req.url == "/subscribe") {
-      bittrex.subscribe(res)
-    } else {
-      fs.readFile('index.html', function(err, data) {
-        if (err) {
-          throw err;
-        }
-        res.writeHead(200, {
-          'Content-Type': 'text/html'
-        });
-        res.write(data);
-        res.end();
-      });
-    }
+var blocks = {};
+hbs.registerHelper('extend', function(name, context) {
+  var block = blocks[name];
+  if (!block) {
+    block = blocks[name] = [];
   }
-}).listen(3000);
 
-bittrex.init()
+  block.push(context.fn(this)); // for older versions of handlebars, use block.push(context(this));
+});
+hbs.registerHelper('block', function(name) {
+  var val = (blocks[name] || []).join('\n');
+
+  // clear the block
+  blocks[name] = [];
+  return val;
+});
+
+// catch 404 and forward to error handler
+app.use(function(req, res, next) {
+  next(createError(404));
+});
+
+// error handler
+app.use(function(err, req, res, next) {
+  // set locals, only providing error in development
+  res.locals.message = err.message;
+  res.locals.error = req.app.get('env') === 'development' ? err : {};
+  console.error(err);
+
+  // render the error page
+  res.status(err.status || 500);
+  res.render('error');
+});
+
+module.exports = app;

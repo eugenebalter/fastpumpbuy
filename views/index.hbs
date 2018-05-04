@@ -1,9 +1,7 @@
-<html lang="en">
-
-<head>
-  <title>Fast buy</title>
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
+{{#extend "pageScripts"}}
   <script type="text/javascript">
+    //coin buy request
+    //isTest - test mode, no real buy
     function buy(isTest) {
       var xhr = new XMLHttpRequest();
 
@@ -17,23 +15,33 @@
         }
       }
       xhr.open("POST", "buy", true)
-
       xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded')
-
-      xhr.send("test=" + isTest + "&coin=" + document.getElementsByName("coin")[0].value + "&btc_amount=" + document.getElementsByName("btc_amount")[0].value);
+      var exch = ""
+      if (document.getElementById("bitrRadios").checked == true) {
+        exch = "&exch_type=1"
+      } else {
+        exch = "&exch_type=2"
+      }
+      xhr.send("test=" + isTest + exch + "&coin=" + document.getElementsByName("coin")[0].value + "&btc_amount=" + document.getElementsByName("btc_amount")[0].value);
     }
-
+    //subscription on price update after coin buy
     function subscribeOnCoinInfo() {
       var div_coin_price_update = document.getElementById('coin_price_update');
       var xhr_chat = new XMLHttpRequest();
-      xhr_chat.open("GET", "/subscribe", true)
+      var exchCommand = ""
+      if (document.getElementById("bitrRadios").checked == true) {
+        exchCommand = "subscribeBittrex"
+      } else {
+        exchCommand = "subscribeBinance"
+      }
+      xhr_chat.open("GET", "/"+exchCommand, true)
       xhr_chat.onload = function() {
         var obj = JSON.parse(xhr_chat.responseText)
         div_coin_price_update.innerHTML = "Current price: " + obj.price + "  Change %:" + obj.dev
         subscribeOnCoinInfo()
       }
       xhr_chat.onerror = function() {
-        console.log("Error")
+        console.log("Server resopnse error")
         div_coin_price_update.innerHTML = "Server response error"
       }
       xhr_chat.onabort = function() {
@@ -42,21 +50,18 @@
       xhr_chat.send('')
     }
   </script>
+{{/extend}}
 
-</head>
-
-<body>
   <div class="container">
     <H2>Be first on pump</H2>
     <div class="form-check">
-      <input class="form-check-input" type="radio" name="exchange_name" id="exampleRadios1" value="1" checked>
-      <label class="form-check-label" for="exampleRadios1">
-        Bittrex exchange
+      <input class="form-check-input" type="radio" name="exchange_name" id="bitrRadios" value="1" checked> Bittrex exchange
+      <label class="form-check-label" for="exchRadios1">
       </label>
     </div>
     <div class="form-check">
-      <input class="form-check-input" type="radio" name="exchange_name" id="exampleRadios2" value="1">
-      <label class="form-check-label" for="exampleRadios2">
+      <input class="form-check-input" type="radio" name="exchange_name" id="binRadios" value="2">
+      <label class="form-check-label" for="exchRadios2">
         Binance exchange
       </label>
     </div>
@@ -86,5 +91,3 @@
       }
     });
   </script>
-
-</body>
