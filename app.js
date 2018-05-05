@@ -5,6 +5,8 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var bodyParser = require('body-parser');
 var hbs = require('hbs');
+const bittrex = require('./lib/bittrex');
+const binance = require('./lib/binance');
 
 var indexRouter = require('./routes/index');
 
@@ -21,6 +23,7 @@ app.use(express.urlencoded({
 }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+app.set('json spaces', 40);
 app.use(bodyParser.json()); // to support JSON-encoded bodies
 app.use(bodyParser.urlencoded({ // to support URL-encoded bodies
   extended: true
@@ -60,5 +63,8 @@ app.use(function(err, req, res, next) {
   res.status(err.status || 500);
   res.render('error');
 });
+
+bittrex.init()
+binance.init()
 
 module.exports = app;

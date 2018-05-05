@@ -7,7 +7,6 @@
 
       xhr.onreadystatechange = function() {
         if (xhr.readyState == XMLHttpRequest.DONE) {
-          //            alert(xhr.responseText);
           var div = document.getElementById('coin_buy_info');
           var obj = JSON.parse(xhr.responseText)
           div.innerHTML += 'Buy price:' + obj.price + " qty:" + obj.qty;
@@ -23,6 +22,27 @@
         exch = "&exch_type=2"
       }
       xhr.send("test=" + isTest + exch + "&coin=" + document.getElementsByName("coin")[0].value + "&btc_amount=" + document.getElementsByName("btc_amount")[0].value);
+    }
+
+    function sell() {
+      var xhr = new XMLHttpRequest();
+
+      xhr.onreadystatechange = function() {
+        if (xhr.readyState == XMLHttpRequest.DONE) {
+          var div = document.getElementById('coin_buy_info');
+          var obj = JSON.parse(xhr.responseText)
+          div.innerHTML += '<br>Sell price:' + obj.price;
+        }
+      }
+      xhr.open("POST", "sell", true)
+      xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded')
+      var exch = ""
+      if (document.getElementById("bitrRadios").checked == true) {
+        exch = "exch_type=1"
+      } else {
+        exch = "exch_type=2"
+      }
+      xhr.send( exch + "&coin=" + document.getElementsByName("coin")[0].value );
     }
     //subscription on price update after coin buy
     function subscribeOnCoinInfo() {
@@ -70,7 +90,7 @@
     <input type="text" name="btc_amount" value=""><br><br>
     <button id="buy_btn" type="button" class="btn btn-success" onclick="buy()">Buy</button>
     <button id="test_buy_btn" type="button" class="btn btn-secondary" onclick="buy(1)">Test Buy</button>
-    <button id="sell_btn" type="button" class="btn btn-danger" onclick="Sell()">Sell</button>
+    <button id="sell_btn" type="button" class="btn btn-danger" onclick="sell()">Sell</button>
     <br><br>
     <div id="coin_buy_info"> </div>
     <br>

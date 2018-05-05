@@ -18,14 +18,23 @@ router.get('/', function(req, res, next) {
 });
 
 router.post('/buy', function(req, res, next) {
-  if (req.body.exch_type == "1") {
-    bittrex.buy(req.body, res)
-  } else {
-    binance.buy(req.body, res)
+  switch (req.body.exch_type) {
+    case "1":
+      bittrex.buy(req.body, res)
+      break
+    default:
+      binance.buy(req.body, res)
   }
 });
 
-bittrex.init()
-binance.init()
+router.post('/sell', function(req, res, next) {
+  switch (req.body.exch_type) {
+    case "1":
+      bittrex.sell(req.body, res)
+      break;
+    default:
+      binance.sell(req.body, res)
+  }
+});
 
 module.exports = router;
